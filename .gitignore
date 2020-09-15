@@ -43,4 +43,4 @@ vignettes/*.pdf
 #--------------------------------------------
 
 # add .xml files
-data/identifiers/fullQuery2020-09-13/xml/*
+data/old/identifiers/fullQuery2020-09-13/xml/*
