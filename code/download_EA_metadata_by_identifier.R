@@ -2,6 +2,10 @@
 # Summary
 ##########################################################################################
 
+# 1) Use solr query to extract package identifiers for all ADC holdings
+# 2) Use identifiers to extract/download associated .xml files (takes 2+ hrs)
+# 3) Extract attribute-level metadata from downloaded .xml files (taks ~1 hr?) and save as .csv
+
 ##############################
 # Load packages
 ##############################
