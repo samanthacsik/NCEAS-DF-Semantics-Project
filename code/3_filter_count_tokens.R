@@ -2,6 +2,11 @@
 # Summary
 ##########################################################################################
 
+# This script uses the tidytext package to filter out "stop_words" (i.e. extremely common words) from unnested token files AND count occurrances
+# These unnested, filtered, and counted tokens are saved as .csv files
+# Filtering and counting takes unnested token files as inputs
+
+# !!!!!!!!!!!MAY WANT TO TRY tf-idf!!!!!!!!!!!
 
 ##########################################################################################
 # General Setup
@@ -15,14 +20,14 @@ library(tidyverse)
 library(tidytext)
 
 ##############################
-# import unnested tokens & stop_words
+# import stop_words (built in lexicons)
 ##############################
 
 # read in stop_words
 data(stop_words)
 
 ##########################################################################################
-# INDIVIDUAL TOKENS
+# Filter/count INDIVIDUAL TOKENS
 ##########################################################################################
 
 # isolate individual token files
@@ -48,12 +53,11 @@ for(i in 1:length(all_unnested_indiv_files)){
 }
 
 ##########################################################################################
-# BIGRAMS 
+# Filter/count BIGRAMS 
 ##########################################################################################
 
 # isolate bigram token files
 all_unnested_bigram_files <- list.files(path = here::here("data", "text_mining", "unnested_tokens"), pattern = glob2rx("unnested_*Bigram*"))
-all_unnested_trigram_files <- list.files(path = here::here("data", "text_mining", "unnested_tokens"), pattern = glob2rx("unnested_*Trigram*"))
 
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_bigram_files)){
@@ -76,7 +80,7 @@ for(i in 1:length(all_unnested_bigram_files)){
 }
 
 ##########################################################################################
-# TRIGRAMS
+# Filter/count TRIGRAMS
 ##########################################################################################
 
 # isolate bigram token files
@@ -107,12 +111,11 @@ for(i in 1:length(all_unnested_trigram_files)){
 ##########################################################################################
 
 # get list of new dfs
-df_list <- mget(ls(pattern = "filterdCounts_"))
+df_list <- mget(ls(pattern = "filteredCounts_"))
 
 # function to write as .csv files
 output_csv <- function(data, names){
-  #folder_path <- here::here("data", "text_mining", "unnested_tokens")
-  write_csv(data, here::here("data", "text_mining", "unnested_tokens", paste0(names, ".csv")))
+  write_csv(data, here::here("data", "text_mining", "filtered_token_counts", paste0(names, ".csv")))
 }
 
 # write each df as .csv file
