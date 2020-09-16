@@ -2,8 +2,9 @@
 # Summary
 ##########################################################################################
 
-# unnest, clean, and count individual keyword, title, abstract tokens
-# * Using this awesome resource: https://www.tidytextmining.com/
+# This script uses the tidytext package to unnest (i.e. separate into individual columns) tokens (i.e. words) into various ngrams (where n = 1, 2, or 3)
+# These unnested tokens are saved as .csv files for use in later scripts
+# Unnesting takes a solr query (saved as a .csv file) as an input
 
 ##########################################################################################
 # General Setup
@@ -86,7 +87,6 @@ df_list <- mget(ls(pattern = "unnested_"))
 
 # function to write as .csv files
 output_csv <- function(data, names){
-  #folder_path <- here::here("data", "text_mining", "unnested_tokens")
   write_csv(data, here::here("data", "text_mining", "unnested_tokens", paste0(names, ".csv")))
 }
 
