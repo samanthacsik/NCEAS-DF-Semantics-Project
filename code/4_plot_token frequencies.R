@@ -5,7 +5,7 @@
 # packages updated: __
 # R version: __
 # input: "data/text_mining/filtered_token_counts/*"
-# output: "figures/token_frequencies/*"
+# output: "figures/token_frequencies*"
 
 #########################################################################################
 # Summary
@@ -137,4 +137,5 @@ bigramToken_plot <- titleBigram_plot + keywordsBigram_plot + abstractBigram_plot
 trigramToken_plot <- titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot
 allTokens_plot <- (titleIndiv_plot + keywordsIndiv_plot + abstractIndiv_plot) / (titleBigram_plot + keywordsBigram_plot + abstractBigram_plot) / (titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot)
   
-# ggsave(filename = here::here("figures", "TokenCounts_plot.png"), plot = allTokens_plot, height = 12, width = 15)
+# ggsave(filename = here::here("figures", "token_frequencies", "TokenCounts_plot.png"), plot = allTokens_plot, height = 12, width = 15)
+# ggsave(filename = here::here("figures", "token_frequencies", "attributesTokenCounts_plot.png"), plot = attributesIndiv_plot, height = 7, width = 7)
