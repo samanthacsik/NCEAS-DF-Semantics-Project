@@ -1,3 +1,12 @@
+# title: Extract Attributes using `eatocsv` Package
+# author: "Sam Csik, adapted from Steven Chong"
+# date created: "2020-09-11"
+# date edited: "2020-09-17"
+# packages updated: __
+# R version: __
+# input: "data/queries/" -- but also query included in script
+# output: "data/attributes_query_eatocsv/identifiers/fullQuery2020-09-13.csv/*"
+
 ##########################################################################################
 # Summary
 ##########################################################################################

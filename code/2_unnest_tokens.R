@@ -100,4 +100,4 @@ list(data = df_list, names = names(df_list)) %>%
 
 unnested_attributes <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv"))
 
-write_csv(unnested_attributes, here::here("data", "text_mining", "unnested_tokens", "unnested_attributesIndivTokens2020-09-13.csv"))
+# write_csv(unnested_attributes, here::here("data", "text_mining", "unnested_tokens", "unnested_attributesIndivTokens2020-09-13.csv"))
