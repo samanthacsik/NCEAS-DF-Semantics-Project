@@ -1,3 +1,12 @@
+# title: Visualizing ngram Networds 
+# author: "Sam Csik"
+# date created: "2020-09-16"
+# date edited: "2020-09-17"
+# packages updated: __
+# R version: __
+# input: "data/text_mining/filtered_token_counts/*"
+# output: "figures/word_associations*"
+
 ##########################################################################################
 # Summary
 ##########################################################################################
@@ -31,6 +40,7 @@ for(i in 1:length(all_filteredCounts_bigram_files)){
   # create object name
   object_name <- basename(all_filteredCounts_bigram_files[i])
   object_name <- gsub("Tokens2020-09-15.csv", "", object_name)
+  object_name <- gsub("filteredCounts_", "", object_name)
   print(object_name)
   
   # wrangle data
@@ -49,18 +59,20 @@ for(i in 1:length(all_filteredCounts_bigram_files)){
 ##############################
 
 # create igraph object
-abstract_bigram_graph <- filteredCounts_abstractBigram %>% 
+abstractBigram_igraphObject <- abstractBigram %>% 
   filter(n > 250) %>% 
   graph_from_data_frame()
 
 # use ggraph to convert igraph object into a ggraph (needs 3 layers: node, edges, text)
-set.seed(2016)
+set.seed(2100)
 
 a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
 
-absract_bigram_network <- ggraph(abstract_bigram_graph, layout = "fr") +
+# png("figures/word_associations/abstractBigram_network.png")
+abstractBigram_network <- ggraph(abstractBigram_igraphObject, layout = "fr") +
   geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
                  arrow = a, end_cap = circle(.07, 'inches')) +
   geom_node_point(color = "lightblue", size = 5) +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
   theme_void()
+# png(abstractBigram_network)
