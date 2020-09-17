@@ -43,4 +43,4 @@ vignettes/*.pdf
 #--------------------------------------------
 
 # add .xml files
-data/old/identifiers/fullQuery2020-09-13/xml/*
+data/attributes_query_eatocsv/identifiers/fullQuery2020-09-13/xml/*
