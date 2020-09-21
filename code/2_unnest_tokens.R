@@ -48,11 +48,9 @@ tidyTokens_unnest <- function(my_data, my_input, split) {
 # function that applies the tidyTokens_unnest() to all specified items within a df, and saves as data objects
 process_df <- function(df, item) {
   
-  print("Processing DF")
   print(item)
   
   # unnest tokens
-  print("processing word_table")
   word_table <- tidyTokens_unnest(df, item, 1)
   bigram_table <- tidyTokens_unnest(df, item, 2)
   trigram_table <- tidyTokens_unnest(df, item, 3)
@@ -119,7 +117,8 @@ attributes$entityName <- gsub("_", " ", attributes$entityName)
 
 # simplify df
 entityNames <- attributes %>% 
-  select(identifier, entityName)
+  select(identifier, entityName) %>% 
+  distinct(identifier, entityName)
 
 # process dfs
 process_df(entityNames, "entityName")
