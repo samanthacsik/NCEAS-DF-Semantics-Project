@@ -94,25 +94,20 @@ for (row in 1:nrow(kta_metadata)) {
 
 ##########################################################################################
 # Process ENTITY & ATTRIBUTE INFORMATION
-# 1) isolate extracted attributeNames & attriuteLabels -- these are already unnested and don't need further processing
+# 1) isolate extracted attributeNames -- these are already unnested and don't need further processing
 # 2) unnest entityNames 
-# 3) unnest attributeDefinitions
+# 3) unnest attributeLabels & attributeDefinitions
+# 4) unnest attributeDefinitions
 ##########################################################################################
 
 ##############################
-# 1) isolate unnested attributesNames & attributeLabels -- make sure format is similar to other unnested tokens above
+# 1) isolate unnested attributesNames -- these are already unneseted; make sure format is similar to other unnested tokens above
 ##############################
 
 # attributeNames
 `unnested_attributeNamesIndivTokens2020-09-13` <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv")) %>% 
   select(identifier, attributeName) %>% 
   rename(word1 = attributeName) %>% 
-  mutate(word2 = rep(""), word3 = rep(""))
-
-# attributeLabels
-`unnested_attributeLabelsIndivTokens2020-09-13` <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv")) %>% 
-  select(identifier, attributeLabel) %>% 
-  rename(word1 = attributeLabel) %>% 
   mutate(word2 = rep(""), word3 = rep(""))
 
 ##############################
@@ -130,15 +125,22 @@ entityNames <- attributes %>%
 process_df(entityNames, "entityName")
 
 ##############################
-# 2) unnest attributeDefinitions
+# 3) unnest attributeLabels & attributeDefinitions
 ##############################
 
-# simplify df
-attributeDefinitions <- attributes %>% 
-  select(identifier, attributeDefinition)
+# individual tokens
+aLaD_metadata <- tribble(
+  ~my_input,  
+  "attributeLabel",    
+  "attributeDefinition"
+)
 
 # process dfs
-process_df(attributeDefinitions, "attributeDefinition")
+for (row in 1:nrow(aLaD_metadata)) {
+  item <- as.character(aLaD_metadata[row,][,1][,1])
+  print(item)
+  process_df(attributes, item)
+}
 
 ##########################################################################################
 # print all unnested dfs as .csv files
