@@ -141,4 +141,4 @@ attributes_tokens <- read_csv(here::here("data", "text_mining", "unnested_tokens
   count(attributeName, sort = TRUE) %>% 
   rename(token = attributeName)
 
-# write_csv(attributes_tokens, here::here("data", "text_mining", "filtered_token_counts", "filteredCounts_attributeIndivTokens2020-09-13.csv"))
+# write_csv(attributes_tokens, here::here("data", "text_mining", "filtered_token_counts", "filteredCounts_attributeNameIndivTokens2020-09-13.csv"))

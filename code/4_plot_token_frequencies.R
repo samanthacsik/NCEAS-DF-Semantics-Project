@@ -111,7 +111,7 @@ for(i in 1:length(my_list)){
   print(plot_name)
     
   freq_plot <- my_list[[i]] %>% 
-    head(20) %>% 
+    head(50) %>% 
     mutate(token = reorder(token, n)) %>% 
     rename(Counts = n) %>% 
     ggplot(aes(token, Counts)) +
@@ -137,5 +137,5 @@ bigramToken_plot <- titleBigram_plot + keywordsBigram_plot + abstractBigram_plot
 trigramToken_plot <- titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot
 allTokens_plot <- (titleIndiv_plot + keywordsIndiv_plot + abstractIndiv_plot) / (titleBigram_plot + keywordsBigram_plot + abstractBigram_plot) / (titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot)
   
-# ggsave(filename = here::here("figures", "token_frequencies", "TokenCounts_plot.png"), plot = allTokens_plot, height = 12, width = 15)
-# ggsave(filename = here::here("figures", "token_frequencies", "attributesTokenCounts_plot.png"), plot = attributesIndiv_plot, height = 7, width = 7)
+# ggsave(filename = here::here("figures", "token_frequencies", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = allTokens_plot, height = 20, width = 16)
+# ggsave(filename = here::here("figures", "token_frequencies", "attributeNamesTokenCounts_top50_plot.png"), plot = attributesIndiv_plot, height = 14, width = 14)
