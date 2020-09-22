@@ -37,7 +37,8 @@ for(i in 1:length(all_files)){
   
   # create object name
   object_name <- basename(all_files[i])
-  object_name <- gsub("2020-09-15.csv", "", object_name)
+  object_name <- gsub("2020-09-21.csv", "", object_name)
+  object_name <- gsub("2020-09-13.csv", "", object_name) # for attributeNames & Definitions (have different date than rest)
   object_name <- gsub("filteredCounts_", "", object_name)
   print(object_name)
   
@@ -48,15 +49,14 @@ for(i in 1:length(all_files)){
   assign(object_name, my_file)
 }
 
-# update object name for attributes since date is different
-attributesIndivTokens <- `attributeIndivTokens2020-09-13.csv`
-
 ##########################################################################################
-# Wrangle data as needed - combine multiple words into single column for plotting
+# Wrangle data as needed 
+# 1) combine bigrams into single column for plotting
+# 2) combine trigrams into single column for plotting
 ##########################################################################################
 
 ##############################
-# bigrams
+# 1) combine bigrams
 ##############################
 
 # get lists of bigram dfs
@@ -74,7 +74,7 @@ for(i in 1:length(bigram_list)){
 }
 
 ##############################
-# trigrams
+# 2) combine trigrams
 ##############################
 
 # get list of trigram dfs
@@ -93,6 +93,8 @@ for(i in 1:length(trigram_list)){
 
 ##########################################################################################
 # Create token frequency plots 
+# 1) create individual plots
+# 2) combine plots into single, multi-panel plot
 ##########################################################################################
 
 ##############################
@@ -132,10 +134,17 @@ for(i in 1:length(my_list)){
 # combine figure panels and save
 ##############################
 
-individualToken_plot <- titleIndiv_plot + keywordsIndiv_plot + abstractIndiv_plot
-bigramToken_plot <- titleBigram_plot + keywordsBigram_plot + abstractBigram_plot
-trigramToken_plot <- titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot
-allTokens_plot <- (titleIndiv_plot + keywordsIndiv_plot + abstractIndiv_plot) / (titleBigram_plot + keywordsBigram_plot + abstractBigram_plot) / (titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot)
-  
-# ggsave(filename = here::here("figures", "token_frequencies", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = allTokens_plot, height = 20, width = 16)
-# ggsave(filename = here::here("figures", "token_frequencies", "attributeNamesTokenCounts_top50_plot.png"), plot = attributesIndiv_plot, height = 14, width = 14)
+# title, keywords, abstract plots
+tka_indivToken_plot <- titleIndiv_plot | keywordsIndiv_plot | abstractIndiv_plot
+tka_bigramToken_plot <- titleBigram_plot | keywordsBigram_plot | abstractBigram_plot
+tka_trigramToken_plot <- titleTrigram_plot + keywordsTrigram_plot + abstractTrigram_plot
+tka_allTokens_plot <- (tka_indivToken_plot) / (tka_bigramToken_plot) / (tka_trigramToken_plot)
+
+# entity & attribute plots
+ea_indivToken_plot <- entityNameIndiv_plot | attributeNamesIndiv_plot | attributeLabelsIndiv_plot | attributeDefinitionIndiv_plot
+ea_bigramToken_plot <- entityNameBigram_plot | plot_spacer() | attributeLabelBigram_plot | attributeDefinitionBigram_plot
+ea_trigramToken_plot <- entityNameTrigram_plot | plot_spacer() | attributeLabelTrigram_plot | attributeDefinitionTrigram_plot
+ea_allTokens_plot <- (ea_indivToken_plot) / (ea_bigramToken_plot) / (ea_trigramToken_plot)
+
+# ggsave(filename = here::here("figures", "token_frequencies", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = tka_allTokens_plot, height = 20, width = 16)
+# ggsave(filename = here::here("figures", "token_frequencies", "entityAttributeTokenCounts_top50_plot.png"), plot = ea_allTokens_plot, height = 25, width = 25)
