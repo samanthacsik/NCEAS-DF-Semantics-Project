@@ -34,8 +34,8 @@ import_filteredTokenCounts <- function(file_name) {
 # used in script: "4_plot_token_frequencies.R"
 # function to combine separate term columns for bigram dfs into single "token" column
   # takes arguments:
-    # object: *Tokens object in global environment, with class df
-    # object_name: *Tokens object name from global environment, as character_string
+    # object: *BigramTokens object in global environment, as class `data.frame`
+    # object_name: *BigramTokens object name from global environment, as class `character`
 #-----------------------------
 
 combine_bigrams <- function(object, object_name){
@@ -52,8 +52,8 @@ combine_bigrams <- function(object, object_name){
 # used in script: "4_plot_token_frequencies.R"
 # function to combine separate term columns for trigram dfs into single "token" column
   # takes arguments:
-    # object: *Tokens object in global environment, with class df
-    # object_name: *Tokens object name from global environment, as character_string
+    # object: *TrigramTokens object in global environment, as class `data.frame` 
+    # object_name: *TrigramTokens object name from global environment, as character_string
 #-----------------------------
 
 combine_trigrams <- function(object, object_name){
@@ -70,8 +70,8 @@ combine_trigrams <- function(object, object_name){
 # used in script: "4_plot_token_frequencies.R"
 # function to create frequency plots, where terms are arranged by Counts
   # takes arguments:
-    # tokens_df:
-    # df_name: 
+    # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
+    # df_name: *Tokens object name in global environment which has had ngrams combined into a single column, as class `character`
 #-----------------------------
 
 create_frequencyByCount_plot <- function(tokens_df, df_name) {
@@ -103,9 +103,9 @@ create_frequencyByCount_plot <- function(tokens_df, df_name) {
 # used in script: "4_plot_token_frequencies.R"
 # function to create frequency plots, where terms are arranged alphabetically
   # takes arguments:
-    # tokens_df:
-    # letter_lowercase: 
-    # df_name:
+    # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
+    # letter_lowercase: lowercase letter of the alphabet, as class `character`
+    # df_name: *Tokens object name in global environment which has had ngrams combined into a single column, as class `character`
 #-----------------------------
 
 create_frequencyByLetter_plot <- function(tokens_df, letter_lowercase, df_name){ 
@@ -134,11 +134,11 @@ create_frequencyByLetter_plot <- function(tokens_df, letter_lowercase, df_name){
 # used in script: "4_plot_token_frequencies.R"
 # function that applies `create_frequencyByLetter_plot()` to df for all 26 letters of the alphabet
   # takes arguments:  
-    # df:
-    # df_name:
+    # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
+    # df_name: *Tokens object name in global environment which has had ngrams combined into a single column, as class `character`
 #-----------------------------
 
-processAll_frequencyByLetter_plots <- function(df, df_name){
+processAll_frequencyByLetter_plots <- function(tokens_df, df_name){ # `tokens_df` was just `df`
   
   print("----------------")
   print("Starting new PDF")
@@ -148,7 +148,7 @@ processAll_frequencyByLetter_plots <- function(df, df_name){
   for(i in 1:length(letters)){
     my_letter <- letters[[i]]
     print(my_letter)
-    create_frequencyByLetter_plot(df, my_letter, name)
+    create_frequencyByLetter_plot(tokens_df = tokens_df, letter_lowercase = my_letter, df_name = name)
   }
   dev.off() 
 }
