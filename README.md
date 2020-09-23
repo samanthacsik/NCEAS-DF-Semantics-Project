@@ -9,7 +9,9 @@ In order to improve data discoverablity within the Arctic Data Center, we are be
 This repository provides code for:
 
   (a) querying Arctic Data Center datapackage metadata (titles, keywords, abstracts, and entity- & attribute-level information)
+  
   (b) text mining and data wrangling necessary for extracting commonly used (and perhaps "semantically important") terms across various metadata fields
+  
   (c) visualizing term frequencies
 
 ### Getting Started
