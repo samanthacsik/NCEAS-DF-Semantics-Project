@@ -36,10 +36,6 @@ NCEAS-DF-Semantics-Project
    |_figures
 ```
 
-### Software
-
-These analyses were performed in R (version ?) on the datateam.nceas.ucsb.edu server.
-
 ### Code
 
 * `0_functions.R`: custom functions for data wrangling & plotting; information regarding function purpose and arguments is included in the script 
@@ -51,6 +47,10 @@ These analyses were performed in R (version ?) on the datateam.nceas.ucsb.edu se
 * `5_ngram_word_associations.R`: visualizes word associations using igraph package (currently just abstract bigrams)
 
 ### Data
+
+### Software
+
+These analyses were performed in R (version ?) on the datateam.nceas.ucsb.edu server.
 
 ### Acknowledgements
 
