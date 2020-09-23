@@ -87,7 +87,7 @@ for(i in 1:length(trigram_list)){
 ##########################################################################################
 # Create token frequency plots (arranged by Counts)
 # 1) create separate plots
-# 2) combine plots into single, multi-panel plot
+# 2) combine plots into single, multi-panel plot using the patchwork package
 ##########################################################################################
 
 ##############################
@@ -139,5 +139,5 @@ for(i in 1:length(wrangledTokens_list)){
   df <- obj[[1]]
   name <- names(obj)
   print(name)
-  processAll_frequencyByLetter_plots(tokens_df = df, df_name = name)
+  processAll_frequencyByLetter_plots(df = df, df_name = name)
 }
