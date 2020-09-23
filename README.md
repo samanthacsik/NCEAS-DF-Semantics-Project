@@ -5,12 +5,12 @@
 
 ### Overview
 
-In order to improve data discoverablity within the Arctic Data Center, we are beginning to incorporate semantic annotations into the data curation process. A current need is to evaluate metadata across the ADC's data holdings for commonly used terms, which may provide useful for constructing and/or expanding upon currently referenced ontologies.
+In order to improve data discoverablity within the Arctic Data Center, we are beginning to incorporate semantic annotations into the data curation process. A current need is to evaluate metadata across the ADC's data holdings for commonly used (and perhaps "semantically important") terms, which may provide useful for constructing and/or expanding upon currently referenced ontologies.
 
 This repository provides code for:
 
   * querying Arctic Data Center datapackage metadata (titles, keywords, abstracts, and entity- & attribute-level information)
-  * text mining and data wrangling necessary for extracting commonly used (and perhaps "semantically important") terms across various metadata fields
+  * text mining and data wrangling necessary for extracting commonly used terms across various metadata fields
   * visualizing term frequencies
 
 ### Getting Started
