@@ -1,17 +1,21 @@
 # title: Plotting Token/ngram Frequencies
 # author: "Sam Csik"
 # date created: "2020-09-16"
-# date edited: "2020-09-17"
+# date edited: "2020-09-22"
 # packages updated: __
 # R version: __
 # input: "data/text_mining/filtered_token_counts/*"
-# output: "figures/token_frequencies*"
+# output: "figures/token_frequencies/*"
 
 #########################################################################################
 # Summary
 ##########################################################################################
 
-# plot token frequencies
+# this script: 
+  # (a) wrangles data to prepare for plotting (i.e. combines tokens into single col) 
+  # (b) plots term frequencies arranged by Counts 
+  # (c) plots term frequencies arranged alphabetically
+# there are A LOT of pdfs generated, and not all are readable (i.e. pdf dimensions need to be expanded for some) -- use the functions below to regenerate and re-save any particular plots as needed
 
 ##########################################################################################
 # General Setup
@@ -26,6 +30,12 @@ library(tidytext)
 library(patchwork)
 
 ##############################
+# source custom functions
+##############################
+
+source(here::here("code", "0_functions.R"))
+
+##############################
 # Read in data
 ##############################
 
@@ -34,23 +44,12 @@ all_files <- list.files(path = here::here("data", "text_mining", "filtered_token
 
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_files)){
-  
-  # create object name
-  object_name <- basename(all_files[i])
-  object_name <- gsub("2020-09-21.csv", "", object_name)
-  object_name <- gsub("2020-09-13.csv", "", object_name) # for attributeNames & Definitions (have different date than rest)
-  object_name <- gsub("filteredCounts_", "", object_name)
-  print(object_name)
-  
-  # read in data
-  my_file <- read_csv(here::here("data", "text_mining", "filtered_token_counts", all_files[i])) 
-  
-  # save as object_name
-  assign(object_name, my_file)
+  file_name <- all_files[i]
+  import_filteredTokenCounts(file_name)
 }
 
 ##########################################################################################
-# Wrangle data as needed 
+# Get data into appropriate format for plotting
 # 1) combine bigrams into single column for plotting
 # 2) combine trigrams into single column for plotting
 ##########################################################################################
@@ -64,13 +63,10 @@ bigram_list <- mget(ls(pattern = "BigramTokens"))
 
 # combine words in bigram dfs
 for(i in 1:length(bigram_list)){
-  
-  # unite separate token cols
-  new_table <- bigram_list[[i]] %>% 
-    unite(col = token, word1, word2, sep = " ")
-  
-  # updated exisiting objects
-  assign(names(bigram_list)[[i]], new_table)
+  obj <- bigram_list[i]
+  object <- obj[[1]]
+  name <- names(obj)
+  combine_bigrams(object = object, object_name = name)
 }
 
 ##############################
@@ -82,18 +78,15 @@ trigram_list <- mget(ls(pattern = "TrigramTokens"))
 
 # combine words in trigram dfs
 for(i in 1:length(trigram_list)){
-  
-  # unite separate token cols
-  new_table <- trigram_list[[i]] %>% 
-    unite(col = token, word1, word2, word3, sep = " ")
-  
-  # updated exisiting objects
-  assign(names(trigram_list)[[i]], new_table)
+  obj <- trigram_list[i]
+  object <- obj[[1]]
+  name <- names(obj)
+  combine_trigrams(object = object, object_name = name)
 }
 
 ##########################################################################################
-# Create token frequency plots 
-# 1) create individual plots
+# Create token frequency plots (arranged by Counts)
+# 1) create separate plots
 # 2) combine plots into single, multi-panel plot
 ##########################################################################################
 
@@ -102,31 +95,15 @@ for(i in 1:length(trigram_list)){
 ##############################
 
 # get updated list of all dfs
-my_list <- mget(ls(pattern = glob2rx("*Tokens")))
+wrangledTokens_list <- mget(ls(pattern = glob2rx("*Tokens")))
 
 # plot
-for(i in 1:length(my_list)){
-  
-  plot_title_name <- names(my_list[i])
-  print(plot_title_name)
-  plot_name <- gsub("Tokens", "_plot", plot_title_name)
-  print(plot_name)
-    
-  freq_plot <- my_list[[i]] %>% 
-    head(50) %>% 
-    mutate(token = reorder(token, n)) %>% 
-    rename(Counts = n) %>% 
-    ggplot(aes(token, Counts)) +
-    geom_col() + 
-    ggtitle(plot_title_name) +
-    xlab(NULL) +
-    scale_y_continuous(expand = c(0,0)) +
-    coord_flip() +
-    theme_linedraw() 
-  
-  plot(freq_plot)
-  
-  assign(plot_name, freq_plot, envir = .GlobalEnv)
+for(i in 1:length(wrangledTokens_list)){
+  obj <- wrangledTokens_list[i]
+  df <- obj[[1]]
+  name <- names(obj)
+  print(name)
+  create_frequencyByCount_plot(tokens_df = df, df_name = name)
   
 }
 
@@ -148,3 +125,19 @@ ea_allTokens_plot <- (ea_indivToken_plot) / (ea_bigramToken_plot) / (ea_trigramT
 
 # ggsave(filename = here::here("figures", "token_frequencies", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = tka_allTokens_plot, height = 20, width = 16)
 # ggsave(filename = here::here("figures", "token_frequencies", "entityAttributeTokenCounts_top50_plot.png"), plot = ea_allTokens_plot, height = 25, width = 25)
+
+##########################################################################################
+# Create token frequency plots (arranged alphabetically)
+##########################################################################################
+
+# get list of wrangled token dfs
+wrangledTokens_list <- mget(ls(pattern = glob2rx("*Tokens")))
+
+# generate pdfs
+for(i in 1:length(wrangledTokens_list)){
+  obj <- wrangledTokens_list[i]
+  df <- obj[[1]]
+  name <- names(obj)
+  print(name)
+  processAll_frequencyByLetter_plots(tokens_df = df, df_name = name)
+}
