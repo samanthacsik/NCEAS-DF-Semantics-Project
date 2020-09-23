@@ -3,6 +3,8 @@
 * **Contributors:** Samantha Csik
 * **Contact:** scsik@nceas.ucsb.edu
 
+### Overview
+
 In order to improve data discoverablity within the Arctic Data Center, we are beginning to incorporate semantic annotations into the data curation process. A current need is to evaluate metadata across the ADC's data holdings for commonly used (and perhaps "semantically important") terms, which may provide useful for constructing and/or expanding upon currently referenced ontologies.
 
 This repository provides code for:
