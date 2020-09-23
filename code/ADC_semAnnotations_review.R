@@ -41,7 +41,8 @@ adc_mn <- getMNode(cn, 'urn:node:ARCTIC')
 # 1) title, keywords, abstracts
 semAnnotations_query <- query(adc_mn, 
                               list(q = "documents:* AND obsolete:(*:* NOT obsoletedBy:*)",
-                                   fl = "identifier, title, keywords, abstract, attribute, sem_annotates, sem_annotation, sem_annotated_by, sem_comment"),
+                                   fl = "identifier, title, keywords, abstract, attribute, sem_annotates, sem_annotation, sem_annotated_by, sem_comment",
+                                   rows = "7000"),
                                    as = "data.frame")
 
 write.csv(titleKeywordsAbract_query, file = here::here("data", "ADC_semantic_annotations_review", paste("fullQuery_semAnnotations", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
