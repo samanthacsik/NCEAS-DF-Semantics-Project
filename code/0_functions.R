@@ -8,6 +8,51 @@
 # output: NA
 
 #-----------------------------
+# used in script "2_unnest_tokens.R"
+# function to unnest individual tokens and separates ngrams into multiple columns
+  # takes arguments:
+    # my_data: a df of solr query results
+    # my_input: input column to get split (e.g. title), as string or symbol
+    # split: number of words to split each input into (e.g. for trigrams, split = 3)
+#-----------------------------
+
+tidyTokens_unnest <- function(my_data, my_input, split) {
+  my_data %>%
+    select(identifier, my_input) %>%
+    unnest_tokens(output = ngram, input = !!my_input, token = "ngrams", n = split) %>% 
+    separate(ngram, into = c("word1", "word2", "word3"), sep = " ")
+}
+
+#-----------------------------
+# used in script "2_unnest_tokens.R"
+# function that applies the tidyTokens_unnest() to all specified items within a df, and saves as data objects
+# takes arguments:
+  # df: a df of solr query results
+  # item: which column(s) (i.e. metadata fields) you'd like to process (e.g. title, keywords, abstract)
+#-----------------------------
+
+# function 
+process_df <- function(df, item) {
+  
+  print(item)
+  
+  # unnest tokens
+  word_table <- tidyTokens_unnest(df, item, 1)
+  bigram_table <- tidyTokens_unnest(df, item, 2)
+  trigram_table <- tidyTokens_unnest(df, item, 3)
+  
+  # create object names
+  word_table_name <- paste("unnested_", item, "IndivTokens", Sys.Date(), sep = "")
+  bigram_table_name <- paste("unnested_", item, "BigramTokens", Sys.Date(), sep = "")
+  trigram_table_name <- paste("unnested_", item, "TrigramTokens", Sys.Date(), sep = "")
+  
+  # print as dfs
+  assign(word_table_name, word_table, envir = .GlobalEnv)
+  assign(bigram_table_name, bigram_table, envir = .GlobalEnv)
+  assign(trigram_table_name, trigram_table, envir = .GlobalEnv)
+}
+
+#-----------------------------
 # used in script: "4_plot_token_frequencies.R"
 # function to import filtered token count dfs generated in script 3 
   # takes arguments:

@@ -34,37 +34,10 @@ my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstr
 attributes <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv"))
 
 ##############################
-# data processing functions
+# source data processing functions
 ##############################
 
-# function that unnests individual tokens and separates ngrams into multiple columns
-tidyTokens_unnest <- function(my_data, my_input, split) {
-  my_data %>%
-    select(identifier, my_input) %>%
-    unnest_tokens(output = ngram, input = !!my_input, token = "ngrams", n = split) %>% 
-    separate(ngram, into = c("word1", "word2", "word3"), sep = " ")
-}
-
-# function that applies the tidyTokens_unnest() to all specified items within a df, and saves as data objects
-process_df <- function(df, item) {
-  
-  print(item)
-  
-  # unnest tokens
-  word_table <- tidyTokens_unnest(df, item, 1)
-  bigram_table <- tidyTokens_unnest(df, item, 2)
-  trigram_table <- tidyTokens_unnest(df, item, 3)
-
-  # create object names
-  word_table_name <- paste("unnested_", item, "IndivTokens", Sys.Date(), sep = "")
-  bigram_table_name <- paste("unnested_", item, "BigramTokens", Sys.Date(), sep = "")
-  trigram_table_name <- paste("unnested_", item, "TrigramTokens", Sys.Date(), sep = "")
-  
-  # print as dfs
-  assign(word_table_name, word_table, envir = .GlobalEnv)
-  assign(bigram_table_name, bigram_table, envir = .GlobalEnv)
-  assign(trigram_table_name, trigram_table, envir = .GlobalEnv)
-}
+source(here::here("code", "0_functions.R"))
 
 ##########################################################################################
 # Process TITLES, KEYWORDS, ABSTRACTS
