@@ -1,0 +1,301 @@
+---
+title: "ADC metadata (titles, keywords, abstracts) analysis following TMwR"
+author: "Sam Csik"
+date: "9/24/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **SUMMARY** 
+
+Here, I follow the NASA metadata mining example in Text Mining with R [Chapter 8](https://www.tidytextmining.com/nasa.html#topic-modeling), and apply similar approaches to ADC metadata (specifically titles, keywords, abstracts).
+
+#### **Part 0.** Load packages
+```{r message = FALSE, warning = FALSE}
+library(tidyverse)
+library(tidytext)
+library(widyr)
+library(igraph)
+library(ggraph)
+library(topicmodels)
+```
+**NOTE:** `topicmodels` requires that [gsl](https://github.com/googlecolab/colabtools/issues/1184) is installed on your system. I didn't have permissions to do so on the server, but installed on my personal computer. Therefore, this code will not *currently* run on the datateam.nceas.ucsb.edu server.
+
+#### **Part 1.** Load data
+```{r message = FALSE, warning = FALSE}
+my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstract2020-09-15.csv"))
+
+# additional stop words in addition to tidytext's build in stop_words lexicons
+my_stopwords <- tibble(word = c(as.character(1:10)))
+```
+
+#### **Part 2.** Wrangle data for titles, keywords, abstracts into separate dataframes and unnest tokens (i.e. split words into individual rows) 
+```{r message = FALSE, warning = FALSE}
+adc_titles <- my_query %>% 
+  select(identifier, title) %>% 
+  unnest_tokens(word, title) 
+
+adc_keywords <- my_query %>% 
+  select(identifier, keywords) %>% 
+  unnest_tokens(word, keywords) 
+
+adc_abstracts <- my_query %>% 
+  select(identifier, abstract) %>% 
+  unnest_tokens(word, abstract) 
+```
+
+Now, remove stop words.
+
+**NOTE:** the tidytext packages has a built-in `stop-words` list that can be used to remove the most common words (e.g. "a", "the", "of"); after initially just removing these pre-curated stop-words, I also decided to remove my own stop-words list, `my_stopwords`, which currently only contains numbers 1-10 (I realized this once I got to step 3); can add more later, if necessary.
+```{r message = FALSE, warning = FALSE}
+adc_titles_filtered <- adc_titles %>% 
+  anti_join(stop_words) %>% 
+  anti_join(my_stopwords)
+
+adc_keywords_filtered <- adc_keywords %>% 
+  anti_join(stop_words) %>% 
+  anti_join(my_stopwords)
+
+adc_abstracts_filtered <- adc_abstracts %>% 
+  anti_join(stop_words) %>% 
+  anti_join(my_stopwords)
+```
+
+#### **Part 3.** Some initial exploration -- calculate counts per word
+```{r message = FALSE, warning = FALSE}
+adc_title_counts <- adc_titles_filtered %>% 
+  count(word, sort = TRUE)
+
+adc_keyword_counts <- adc_keywords_filtered %>% 
+  count(word, sort = TRUE)
+
+adc_abstract_counts <- adc_abstracts_filtered %>% 
+  count(word, sort = TRUE)
+```
+
+#### **Part 4.** Explore word co-occurrances
+
+First, find pairs of words that occur most frequently together in title, keyword, or abstract fields
+```{r message = FALSE, warning = FALSE}
+title_word_pairs <- adc_titles_filtered %>% 
+  pairwise_count(word, identifier, sort = TRUE, upper = FALSE)
+
+keyword_word_pairs <- adc_keywords_filtered %>% 
+  pairwise_count(word, identifier, sort = TRUE, upper = FALSE)
+
+abstract_word_pairs <- adc_abstracts_filtered %>% 
+  pairwise_count(word, identifier, sort = TRUE, upper = FALSE)
+```
+
+Now, plot networks of co-occurring words. This helps to answer a question such as, *which keyword pairs occur most often?*
+
+First let's look at **titles**:
+```{r message = FALSE, warning = FALSE}
+# titles
+set.seed(2000)
+title_word_pairs %>% 
+  filter(n >= 100) %>% 
+  graph_from_data_frame() %>% 
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_color = "cyan4") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+  theme_void()
+```
+
+Now, **keywords**:
+```{r message = FALSE, warning = FALSE}
+# keywords
+set.seed(2000)
+keyword_word_pairs %>% 
+  filter(n >= 300) %>% 
+  graph_from_data_frame() %>% 
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_color = "darkorchid4") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+  theme_void()
+```
+
+And lastly, **abstracts**:
+```{r message = FALSE, warning = FALSE}
+# abstracts
+set.seed(2000)
+abstract_word_pairs %>% 
+  filter(n >= 400) %>% 
+  graph_from_data_frame() %>% 
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_color = "darkred") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+  theme_void()
+```
+
+#### **Part 5.** Find correlation among co-occurring words (e.g. keywords that are more likely to occur together than with other keywords for a dataset). This helps to answer a question such as, *which keywords occur more often together than with other keywords in a datase?*
+```{r message = FALSE, warning = FALSE}
+# calculate correlations
+keyword_cors <- adc_keywords %>% 
+  group_by(word) %>% 
+  filter(n() >= 50) %>% 
+  pairwise_cor(word, identifier, sort = TRUE, upper = FALSE)
+
+# visualize network of correlations
+set.seed(2000)
+keyword_cors %>% 
+  filter(correlation > 0.6) %>% 
+  graph_from_data_frame() %>% 
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation), edge_color = "darkorchid4") +
+  geom_node_point(size = 3) +
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+  theme_void()
+```
+
+### **Part 6.** Calculate tf-idf (text-frequency, inverse document frequency) for abstracts (i.e. identify words that are especially important to an abstract within a collection/corpus of abstracts). The tf-idf algorithm gives greater weight to words that are common, but not too common.
+```{r message = FALSE, warning = FALSE}
+abstract_tf_idf <- adc_abstracts %>% 
+  count(identifier, word, sort = TRUE) %>% 
+  ungroup() %>% 
+  bind_tf_idf(word, identifier, n) %>% 
+  arrange(-tf_idf)
+```
+**NOTE:** if `n` and `tf` both = 1 then these were abstracts that only had a single word in them (making the tf-idf algorithm think that it is a very important word); might want to throw these out later
+
+Now join abstract tf-idf df with keywords to find the highest tf-idf words for a given keyword.
+```{r message = FALSE, warning = FALSE}
+# rename word to keyword 
+adc_keywords <- adc_keywords %>% 
+  rename(keyword = word)
+
+# combine dfs
+abstract_tf_idf_joined <- full_join(abstract_tf_idf, adc_keywords, by = "identifier")
+
+# plot important words, as measured by tf-idf for a select few keywords
+abstract_tf_idf_joined %>% 
+  filter(!near(tf, 1)) %>%
+  filter(keyword %in% c("terrestrial", "ice", 
+                        "atmosphere", "biosphere",
+                        "ecosystems", "plankton")) %>%
+  arrange(desc(tf_idf)) %>%
+  group_by(keyword) %>%
+  distinct(word, keyword, .keep_all = TRUE) %>%
+  top_n(15, tf_idf) %>% 
+  ungroup() %>%
+  mutate(word = factor(word, levels = rev(unique(word)))) %>%
+  ggplot(aes(word, tf_idf, fill = keyword)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~keyword, ncol = 3, scales = "free") +
+  coord_flip() +
+  labs(title = "Highest tf-idf words in ADC metadata abstract fields",
+       x = NULL, y = "tf-idf")
+```
+So for example, datasets labeled with keyword "atmosphere" have descriptions characterized with words like "glaciochemical", "weather", "record", etc. However, there are a lot of acronymns/words that don't appear to be very informative without further exploration.
+
+**NOTE:** these are just a select few keywords; more can be added above.
+
+#### **Part 7.** An alternative/additional approach for asking *what ACD abstract fields are about* is to use latent Dirichlet allocation (LDA) topic modeling to model each document (abstract) as a mixture of topics, and each topic as a mixture of words. An important benefit to this approach is that it allows documents (in this case, abstracts) to "overlap" each other in terms of content, rahter being separated into discrete groups. This more closely mirrors the typical use of natural language.
+
+First, tidy terms so that they are in the correct format (need 3 columns: document/abstract identifier, word, count) so that we can cast to a `DocumentTermMatrix` (which is the format necessary for topic modeling)
+```{r message = FALSE, warning = FALSE}
+# get abstract terms in correct format for casting (identifier, word, cout)
+LDA_abstract_word_counts <- adc_abstracts %>%
+  count(identifier, word, sort = TRUE) %>%
+  ungroup()
+
+# cast to dtm
+abstract_dtm <- LDA_abstract_word_counts %>%
+  cast_dtm(identifier, word, n)
+abstract_dtm
+```
+
+Then, run LDA model and tidy the output. `k` is equal to the number of topic categories that the model will create. You can't know ahead of time what to set `k` to, though you'll want to see that documents/abstracts are getting sorted cleanly into topics. This will become clearer below.
+```{r message = FALSE, warning = FALSE}
+# run model
+abstract_lda <- LDA(abstract_dtm, k = 23, control = list(seed = 1200))
+abstract_lda
+
+# tidy model output
+tidy_lda <- tidy(abstract_lda)
+tidy_lda
+```
+
+Examine the top 10 terms from each topic to get a sense of what topics are about. **"Beta" is the probability that a term (word) belongs to that topic.**
+```{r message = FALSE, warning = FALSE, fig.height = 10, fig.width = 10}
+top_terms <- tidy_lda %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta) %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  group_by(topic, term) %>%    
+  arrange(desc(beta)) %>%  
+  ungroup() %>%
+  ggplot(aes(term, beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(title = "Top 10 terms in each LDA topic",
+       x = NULL, y = expression(beta)) +
+  facet_wrap(~ topic, ncol = 4, scales = "free")
+
+top_terms
+```
+
+Now examine which topics are associated with which abstracts. **"Gamma" is the probability that a given abstract belongs in a given topic.**
+```{r message = FALSE, warning = FALSE}
+lda_gamma <- tidy(abstract_lda, matrix = "gamma")
+lda_gamma
+
+# visualize
+ggplot(lda_gamma, aes(gamma)) +
+  geom_histogram() +
+  scale_y_log10() +
+  labs(title = "Distribution of probabilities for all topics",
+       y = "Number of documents", x = expression(gamma))
+```
+We see that there are many values near 0, meaning that there are many abstracts that do not belong in each topic. There are also many values near 1, representing abstracts that do belong to those topics. This is a bit easier to comprehend when we facet by topic.
+
+```{r message = FALSE, warning = FALSE, fig.height = 10, fig.width = 10}
+lda_gamma_by_topic <- ggplot(lda_gamma, aes(gamma, fill = as.factor(topic))) +
+  geom_histogram(show.legend = FALSE) +
+  facet_wrap(~ topic, ncol = 4) +
+  scale_y_log10() +
+  labs(title = "Distribution of probability for each topic",
+       y = "Number of documents", x = expression(gamma))
+
+lda_gamma_by_topic
+```
+Here, each abstract in our corpus is represented in each facet. See topics 7, 11, and 20, for example--there are many abstracts with a gamma close to 0, which represent abstracts that do not belong to this topic. However, there are also many abstracts close to 1, which do belong to this topic. These are also cleanly sorted (i.e. not many abstracts falling in the middle gamma range). Other topics aren't so cleanly sorted, but k = 23 seemed to be the best out of 15, 20, 23, 25 **(still need to try more but takes a while to run)**
+
+### **Part 8.** Connecting topic modeling with keywords to see what relationships we might find
+```{r message = FALSE, warning = FALSE}
+lda_gamma_joined <- full_join(lda_gamma, adc_keywords, by = c("document" = "identifier"))
+
+lda_gamma_joined
+```
+
+Filter to keep only the document-topic entries that have probabilities (gamma) greater than some cut-off value (let's use 0.9) and plot
+```{r message = FALSE, warning = FALSE, fig.height = 10, fig.width = 10}
+top_keywords <- lda_gamma_joined %>% 
+  filter(gamma > 0.9) %>% 
+  count(topic, keyword, sort = TRUE) %>% 
+  group_by(topic) %>% 
+  top_n(5, n) %>% 
+  ungroup() %>% 
+  mutate(keyword = reorder_within(keyword, n, topic)) %>% 
+  ggplot(aes(keyword, n, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Top keywords for each LDA topic",
+       x = NULL, y = "Number of abstracts") +
+  coord_flip() + 
+  scale_x_reordered() +
+  facet_wrap(~topic, ncol = 4, scales = "free")
+
+top_keywords
+```
+This plot answers the question, *"For the datasets with abstract fields that have a high probability of belonging to a given topic, what are the most common human-assigned keywords?"*
