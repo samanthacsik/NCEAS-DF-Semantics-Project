@@ -194,7 +194,7 @@ abstract_tf_idf_joined %>%
   labs(title = "Highest tf-idf words in ADC metadata abstract fields",
        x = NULL, y = "tf-idf")
 ```
-So for example, datasets labeled with keyword "atmosphere" have descriptions characterized with words like "glaciochemical", "weather", "record", etc. However, there are a lot of acronymns/words that don't appear to be very informative without further exploration.
+So for example, datasets labeled with keyword "atmosphere" have descriptions characterized with words like "glaciochemical", "weather", "record", "neem", etc. However, there are a lot of acronymns/words that don't appear to be very informative without further exploration.
 
 **NOTE:** these are just a select few keywords; more can be added above.
 
@@ -203,7 +203,7 @@ So for example, datasets labeled with keyword "atmosphere" have descriptions cha
 First, tidy terms so that they are in the correct format (need 3 columns: document/abstract identifier, word, count) so that we can cast to a `DocumentTermMatrix` (which is the format necessary for topic modeling)
 ```{r message = FALSE, warning = FALSE}
 # get abstract terms in correct format for casting (identifier, word, cout)
-LDA_abstract_word_counts <- adc_abstracts %>%
+LDA_abstract_word_counts <- adc_abstracts_filtered %>%
   count(identifier, word, sort = TRUE) %>%
   ungroup()
 
