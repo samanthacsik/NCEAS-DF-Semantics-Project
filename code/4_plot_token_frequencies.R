@@ -123,7 +123,7 @@ ea_bigramToken_plot <- entityNameBigram_plot | plot_spacer() | attributeLabelBig
 ea_trigramToken_plot <- entityNameTrigram_plot | plot_spacer() | attributeLabelTrigram_plot | attributeDefinitionTrigram_plot
 ea_allTokens_plot <- (ea_indivToken_plot) / (ea_bigramToken_plot) / (ea_trigramToken_plot)
 
-ggsave(filename = here::here("figures", "token_frequencies", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = tka_allTokens_plot, height = 25, width = 20)
+ggsave(filename = here::here("figures", "token_frequencies", "arranged_byCount", "titleKeywordsAbstractTokenCounts_top50_plot.png"), plot = tka_allTokens_plot, height = 25, width = 20)
 # ggsave(filename = here::here("figures", "token_frequencies", "entityAttributeTokenCounts_top50_plot.png"), plot = ea_allTokens_plot, height = 25, width = 25)
 
 ##########################################################################################
