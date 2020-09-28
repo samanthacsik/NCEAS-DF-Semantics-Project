@@ -1,7 +1,7 @@
 # title: Filter Out 'stop_words' from Unnested Token dfs
 # author: "Sam Csik"
 # date created: "2020-09-16"
-# date edited: "2020-09-21
+# date edited: "2020-09-28
 # packages updated: __
 # R version: __
 # input: "data/text_mining/unnested_tokens/*"
@@ -11,9 +11,8 @@
 # Summary
 ##########################################################################################
 
-# This script uses the tidytext package to filter out "stop_words" (i.e. extremely common words) from unnested token files AND count occurrences
-# These unnested, filtered, and counted tokens are saved as .csv files
-# For loops to filter and count tokens takes unnested token files as inputs
+# This script uses the tidytext package to filter out "stop_words" (i.e. extremely common words) from unnested token files, count number of occurrences for each term (token), and count the number of unique identifiers associated with each unique term
+# These data frames are saved then as .csv files
 
 ##########################################################################################
 # General Setup
@@ -34,65 +33,10 @@ library(tidytext)
 data(stop_words)
 
 ##############################
-# functions to filter out stop_words and NAs from unnested tokens and count frequency of occurrences for each term
+# source data processing functions
 ##############################
 
-filterCount_indivTokens <- function(file_name) {
-  
-  # create object name
-  object_name <- basename(file_name)
-  object_name <- gsub(".csv", "", object_name)
-  object_name <- gsub("unnested_", "filteredCounts_", object_name)
-  print(object_name)
-  
-  # wrangle data
-  my_file <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
-    rename(token = word1) %>% # comes in handy in script 4
-    select(identifier, token) %>% 
-    filter(!token %in% stop_words$word, token != "NA") %>% 
-    count(token, sort = TRUE)
-  
-  # save as object_name
-  assign(object_name, my_file, envir = .GlobalEnv)
-}
-
-filterCount_bigramTokens <- function(file_name) {
-  
-  # create object name
-  object_name <- basename(file_name)
-  object_name <- gsub(".csv", "", object_name)
-  object_name <- gsub("unnested_", "filteredCounts_", object_name)
-  print(object_name)
-  
-  # wrangle data
-  my_file <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
-    select(identifier, word1, word2) %>% 
-    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
-    filter(word1 != "NA", word2 != "NA") %>% 
-    count(word1, word2, sort = TRUE)
-  
-  # save as object_name
-  assign(object_name, my_file, envir = .GlobalEnv)
-}
-
-filterCount_trigramTokens <- function(file_name) {
-  
-  # create object name
-  object_name <- basename(file_name)
-  object_name <- gsub(".csv", "", object_name)
-  object_name <- gsub("unnested_", "filteredCounts_", object_name)
-  print(object_name)
-  
-  # wrangle data
-  my_file <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
-    select(identifier, word1, word2, word3) %>% 
-    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
-    filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
-    count(word1, word2, word3, sort = TRUE)
-  
-  # save as object_name
-  assign(object_name, my_file, envir = .GlobalEnv)
-}
+source("code/0_functions.R")
 
 ##########################################################################################
 # Filter/count INDIVIDUAL TOKENS
@@ -148,3 +92,19 @@ output_csv <- function(data, names){
 # write each df as .csv file
 list(data = df_list, names = names(df_list)) %>%
   purrr::pmap(output_csv) 
+
+##########################################################################################
+# TEST TO MAKE SURE CODE WORKS AS EXPECTED
+##########################################################################################
+
+# # load data
+# my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstract2020-09-15.csv"))
+
+# # filter for token == "glacier" to return number of unique identifiers associated with individual keyword "glacier"; this should match "unique_id" for token = "glacier" when running filterCount_indiv_tokens()
+# test_example <- my_query %>%
+#   select(identifier, keywords) %>%
+#   unnest_tokens(output = word, input = "keywords", token = "ngrams", n = 1) %>%
+#   group_by(word) %>%
+#   filter(word == "glacier") %>%
+#   distinct(identifier) %>%
+#   count()

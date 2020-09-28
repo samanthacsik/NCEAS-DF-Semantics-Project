@@ -1,7 +1,7 @@
 # title: Custom Functions for Data Wrangling & Plotting
 # author: "Sam Csik"
 # date created: "2020-09-22"
-# date edited: "2020-09-22"
+# date edited: "2020-09-28"
 # packages updated: __
 # R version: __
 # input: NA
@@ -50,6 +50,115 @@ process_df <- function(df, item) {
   assign(word_table_name, word_table, envir = .GlobalEnv)
   assign(bigram_table_name, bigram_table, envir = .GlobalEnv)
   assign(trigram_table_name, trigram_table, envir = .GlobalEnv)
+}
+
+#-----------------------------
+# used in script: "3_filterStopWords_count_tokens.R"
+# functions filter out tidytext::data(stop_words), count unnested tokens, and count number of unique identifiers for each unique token (separate functions for individual tokens, bigrams, trigrams)
+  # takes arguments:
+    # file_name: name of .csv file saved to "data/text_mining/unnested_tokens/*"
+#-----------------------------
+
+###### individual tokens ###### 
+filterCount_indivTokens <- function(file_name) {
+  
+  # create object name
+  object_name <- basename(file_name)
+  object_name <- gsub(".csv", "", object_name)
+  object_name <- gsub("unnested_", "filteredCounts_", object_name)
+  print(object_name)
+  
+  # total token counts
+  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+    rename(token = word1) %>% 
+    select(identifier, token) %>% 
+    filter(!token %in% stop_words$word, token != "NA") %>% 
+    count(token, sort = TRUE)
+  
+  # unique ID counts for each token
+  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+    rename(token = word1) %>% 
+    select(identifier, token) %>% 
+    filter(!token %in% stop_words$word, token != "NA") %>% 
+    group_by(token) %>% 
+    summarise(unique_ids = n_distinct(identifier)) %>% 
+    arrange(-unique_ids)
+  
+  # full_join dfs by token
+  my_file <- full_join(token_counts, uniqueID_counts)
+  
+  # save as object_name
+  assign(object_name, my_file, envir = .GlobalEnv)
+}
+
+######  bigrams ###### 
+filterCount_bigramTokens <- function(file_name) {
+  
+  # create object name
+  object_name <- basename(file_name)
+  object_name <- gsub(".csv", "", object_name)
+  object_name <- gsub("unnested_", "filteredCounts_", object_name)
+  print(object_name)
+  
+  # wrangle data
+  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", "unnested_abstractBigramTokens2020-09-21.csv")) %>% 
+    select(identifier, word1, word2) %>% 
+    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
+    filter(word1 != "NA", word2 != "NA") %>% 
+    count(word1, word2, sort = TRUE) %>% 
+    unite(col = "token", word1, word2, sep = " ")
+  
+  # unique ID counts for each token
+  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", "unnested_abstractBigramTokens2020-09-21.csv")) %>% 
+    select(identifier, word1, word2) %>% 
+    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
+    filter(word1 != "NA", word2 != "NA") %>% 
+    unite(col = "token", word1, word2, sep = " ") %>% 
+    group_by(token) %>% 
+    summarise(unique_ids = n_distinct(identifier)) %>% 
+    arrange(-unique_ids)
+  
+  # full_join dfs by token
+  my_file <- full_join(token_counts, uniqueID_counts) %>% 
+    separate(token, into = c("word1"," word2"), sep = " ")
+
+  # save as object_name
+  assign(object_name, my_file, envir = .GlobalEnv)
+}
+
+######trigrams ###### 
+filterCount_trigramTokens <- function(file_name) {
+  
+  # create object name
+  object_name <- basename(file_name)
+  object_name <- gsub(".csv", "", object_name)
+  object_name <- gsub("unnested_", "filteredCounts_", object_name)
+  print(object_name)
+  
+  # wrangle data
+  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+    select(identifier, word1, word2, word3) %>% 
+    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
+    filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
+    count(word1, word2, word3, sort = TRUE) %>% 
+    unite(col = "token", word1, word2, word3, sep = " ")
+ 
+  # unique ID counts for each token
+  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+    select(identifier, word1, word2, word3) %>% 
+    filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
+    filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
+    unite(col = "token", word1, word2, word3, sep = " ") %>% 
+    group_by(token) %>% 
+    summarise(unique_ids = n_distinct(identifier)) %>% 
+    arrange(-unique_ids)
+
+  # full_join dfs by token
+  my_file <- full_join(token_counts, uniqueID_counts) %>% 
+    separate(token, into = c("word1"," word2", "word3"), sep = " ")
+  
+  # save as object_name
+  assign(object_name, my_file, envir = .GlobalEnv)
 }
 
 #-----------------------------
