@@ -44,6 +44,7 @@ adc_mn <- getMNode(cn, 'urn:node:ARCTIC')
 # 1) title, keywords, abstracts
 titleKeywordsAbract_query <- query(adc_mn, 
                                    list(q = "documents:* AND obsolete:(*:* NOT obsoletedBy:*)",
+                                        rows = "7000",
                                         fl = "identifier, title, keywords, abstract"),
                                    as = "data.frame")
 
@@ -57,3 +58,13 @@ attributes_query <- query(adc_mn,
                           as = "data.frame")
 
 # write.csv(attributes_query, file = here::here("data", "queries", paste("fullQuery_attributes", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
+
+# 3) title, keywords, abstracts, rights holders, origins
+titleKeywordsAbractAuthors_query <- query(adc_mn, 
+                                   list(q = "documents:* AND obsolete:(*:* NOT obsoletedBy:*)",
+                                        rows = "7000",
+                                        fl = "identifier, title, keywords, abstract, author, authorLastName, rightsHolder, origin"),
+                                   as = "data.frame")
+
+# write.csv(titleKeywordsAbractAuthors_query, file = here::here("data", "queries", paste("fullQuery_titleKeywordsAbstractAuthors", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
+
