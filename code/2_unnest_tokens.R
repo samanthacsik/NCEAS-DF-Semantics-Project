@@ -34,7 +34,7 @@ library(tidytext)
 my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv"))
 attributes <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv"))
 
-# isolate authors and ids from my_query to join with attributes df 
+# isolate authors and ids from my_query to join with attributes df (eatocsv package does not include `authors` when processing queried data)
 authors_ids <- my_query %>% select(identifier, author)
 
 # join (original attributes = 136643 rows; joined attributes below = 135588 rows; still not sure what the difference of 1065 rows is from)
@@ -77,9 +77,6 @@ for (row in 1:nrow(kta_metadata)) {
 # 3) unnest attributeLabels & attributeDefinitions
 # 4) unnest attributeDefinitions
 ##########################################################################################
-
-# isolate authors & identifiers to add to processed (see below)
-authors_ids <- my_query %>% select(identifier, author)
 
 ##############################
 # 1) isolate unnested attributesNames -- these are already unneseted; make sure format is similar to other unnested tokens above
