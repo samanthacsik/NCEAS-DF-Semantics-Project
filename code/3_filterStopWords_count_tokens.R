@@ -98,13 +98,22 @@ list(data = df_list, names = names(df_list)) %>%
 ##########################################################################################
 
 # # load data
-# my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstract2020-09-15.csv"))
+# my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv"))
 
 # # filter for token == "glacier" to return number of unique identifiers associated with individual keyword "glacier"; this should match "unique_id" for token = "glacier" when running filterCount_indiv_tokens()
 # test_example <- my_query %>%
-#   select(identifier, keywords) %>%
+#   select(identifier, author, keywords) %>%
 #   unnest_tokens(output = word, input = "keywords", token = "ngrams", n = 1) %>%
 #   group_by(word) %>%
 #   filter(word == "glacier") %>%
-#   distinct(identifier) %>%
+#   distinct(author) %>% # either "author" or "identifier" here
 #   count()
+
+# trigram "airglow imgage data" 
+# airglow_image_data_example <- my_query %>%
+#   select(identifier, author, title) %>%
+#   unnest_tokens(output = word, input = "title", token = "ngrams", n = 3) %>%
+#   group_by(word) %>%
+#   filter(word == "airglow image data") 
+#   # distinct(identifier) %>%
+#   # count()
