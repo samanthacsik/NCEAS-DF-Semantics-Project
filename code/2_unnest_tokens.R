@@ -30,8 +30,15 @@ library(tidytext)
 # Upload data - solr query results from script 1a & EA data from script 1b
 ##############################
 
-my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstract2020-09-15.csv"))
+# import data
+my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv"))
 attributes <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv"))
+
+# isolate authors and ids from my_query to join with attributes df 
+authors_ids <- my_query %>% select(identifier, author)
+
+# join (original attributes = 136643 rows; joined attributes below = 135588 rows; still not sure what the difference of 1065 rows is from)
+attributes <- inner_join(attributes, authors_ids)
 
 ##############################
 # source data processing functions
@@ -71,13 +78,16 @@ for (row in 1:nrow(kta_metadata)) {
 # 4) unnest attributeDefinitions
 ##########################################################################################
 
+# isolate authors & identifiers to add to processed (see below)
+authors_ids <- my_query %>% select(identifier, author)
+
 ##############################
 # 1) isolate unnested attributesNames -- these are already unneseted; make sure format is similar to other unnested tokens above
 ##############################
 
 # attributeNames
-`unnested_attributeNamesIndivTokens2020-09-13` <- read_csv(here::here("data", "attributes_query_eatocsv", "extracted_attributes", "fullQuery2020-09-13_attributes.csv")) %>% 
-  select(identifier, attributeName) %>% 
+`unnested_attributeNamesIndivTokens2020-09-13` <- attributes %>% 
+  select(identifier, author, attributeName) %>% 
   rename(word1 = attributeName) %>% 
   mutate(word2 = rep(""), word3 = rep(""))
 
@@ -90,8 +100,8 @@ attributes$entityName <- gsub("_", " ", attributes$entityName)
 
 # simplify df
 entityNames <- attributes %>% 
-  select(identifier, entityName) %>% 
-  distinct(identifier, entityName)
+  select(identifier, author, entityName) %>% 
+  distinct(identifier, author, entityName) # since there is an entityName for every attribute in said entity
 
 # process dfs
 process_df(entityNames, "entityName")

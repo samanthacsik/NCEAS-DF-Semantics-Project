@@ -18,7 +18,7 @@
 
 tidyTokens_unnest <- function(my_data, my_input, split) {
   my_data %>%
-    select(identifier, my_input) %>%
+    select(identifier, author, my_input) %>%
     unnest_tokens(output = ngram, input = !!my_input, token = "ngrams", n = split) %>% 
     separate(ngram, into = c("word1", "word2", "word3"), sep = " ")
 }
