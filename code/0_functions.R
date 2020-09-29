@@ -54,7 +54,7 @@ process_df <- function(df, item) {
 
 #-----------------------------
 # used in script: "3_filterStopWords_count_tokens.R"
-# functions filter out tidytext::data(stop_words), count unnested tokens, and count number of unique identifiers for each unique token (separate functions for individual tokens, bigrams, trigrams)
+# functions filter out tidytext::data(stop_words), count unnested tokens, and count number of unique identifiers and unique authors for each unique token (separate functions for individual tokens, bigrams, trigrams)
   # takes arguments:
     # file_name: name of .csv file saved to "data/text_mining/unnested_tokens/*"
 #-----------------------------

@@ -11,7 +11,7 @@
 # Summary
 ##########################################################################################
 
-# This script uses the tidytext package to filter out "stop_words" (i.e. extremely common words) from unnested token files, count number of occurrences for each term (token), and count the number of unique identifiers associated with each unique term
+# This script uses the tidytext package to filter out "stop_words" (i.e. extremely common words) from unnested token files, count number of occurrences for each term (token), and count the number of unique identifiers & unique authors associated with each unique term
 # These data frames are saved then as .csv files
 
 ##########################################################################################
