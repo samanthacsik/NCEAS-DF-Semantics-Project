@@ -98,7 +98,7 @@ list(data = df_list, names = names(df_list)) %>%
 ##########################################################################################
 
 # # load data
-my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv"))
+# my_query <- read_csv(here::here("data", "queries", "fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv"))
 
 # # filter for token == "glacier" to return number of unique identifiers associated with individual keyword "glacier"; this should match "unique_id" for token = "glacier" when running filterCount_indiv_tokens()
 # test_example <- my_query %>%
