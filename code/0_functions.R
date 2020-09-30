@@ -197,7 +197,7 @@ filterCount_trigramTokens <- function(file_name) {
 }
 
 #-----------------------------
-# used in script: "4_plot_token_frequencies.R"
+# used in script: "4a_plot_token_frequencies.R"
 # function to import filtered token count dfs generated in script 3 
   # takes arguments:
     # file_name: name of .csv file located at "data/text_mining/filtered_token_counts/*"
@@ -206,9 +206,12 @@ filterCount_trigramTokens <- function(file_name) {
 import_filteredTokenCounts <- function(file_name) {
   
   # create object name
-  object_name <- basename(all_files[i])
-  object_name <- gsub("2020-09-21.csv", "", object_name)
-  object_name <- gsub("2020-09-13.csv", "", object_name) # for attributeNames & Definitions (have different date than rest)
+  object_name <- tools::file_path_sans_ext(all_files[i])
+  print(object_name)
+  object_name <- gsub("2020.*", "", object_name) 
+  print(object_name)
+  # object_name <- gsub("2020-09-21.csv", "", object_name)
+  # object_name <- gsub("2020-09-13.csv", "", object_name) # for attributeNames & Definitions (have different date than rest)
   object_name <- gsub("filteredCounts_", "", object_name)
   print(object_name)
   
@@ -220,13 +223,14 @@ import_filteredTokenCounts <- function(file_name) {
 }
 
 #-----------------------------
-# used in script: "4_plot_token_frequencies.R"
-# function to combine separate term columns for bigram dfs into single "token" column
+# used in script: "4a_plot_token_frequencies.R"
+# function to combine separate term columns for bigram or trigram dfs into single "token" column
   # takes arguments:
-    # object: *BigramTokens object in global environment, as class `data.frame`
-    # object_name: *BigramTokens object name from global environment, as class `character`
+    # object: *BigramTokens or *TrigramTokens object in global environment, as class `data.frame`
+    # object_name: *BigramTokens or *TrigramTokens object name from global environment, as class `character`
 #-----------------------------
 
+######  bigrams ###### 
 combine_bigrams <- function(object, object_name){
   
   # unite separate token cols
@@ -237,14 +241,7 @@ combine_bigrams <- function(object, object_name){
   assign(object_name, new_table, envir = .GlobalEnv) 
 }
 
-#-----------------------------
-# used in script: "4_plot_token_frequencies.R"
-# function to combine separate term columns for trigram dfs into single "token" column
-  # takes arguments:
-    # object: *TrigramTokens object in global environment, as class `data.frame` 
-    # object_name: *TrigramTokens object name from global environment, as character_string
-#-----------------------------
-
+###### trigrams ###### 
 combine_trigrams <- function(object, object_name){
   
   # unite separate token cols
@@ -256,7 +253,7 @@ combine_trigrams <- function(object, object_name){
 }
 
 #-----------------------------
-# used in script: "4_plot_token_frequencies.R"
+# used in script: "4a_plot_token_frequencies.R"
 # function to create frequency plots, where terms are arranged by Counts
   # takes arguments:
     # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
@@ -289,7 +286,7 @@ create_frequencyByCount_plot <- function(tokens_df, df_name) {
 }
 
 #-----------------------------
-# used in script: "4_plot_token_frequencies.R"
+# used in script: "4a_plot_token_frequencies.R"
 # function to create frequency plots, where terms are arranged alphabetically
   # takes arguments:
     # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
@@ -320,7 +317,7 @@ create_frequencyByLetter_plot <- function(tokens_df, letter_lowercase, df_name){
 }
 
 #-----------------------------
-# used in script: "4_plot_token_frequencies.R"
+# used in script: "4a_plot_token_frequencies.R"
 # function that applies `create_frequencyByLetter_plot()` to df for all 26 letters of the alphabet
   # takes arguments:  
     # tokens_df: *Tokens object in global environment which has had ngrams combined into a single column, as class `data.frame`
@@ -342,3 +339,39 @@ processAll_frequencyByLetter_plots <- function(tokens_df, df_name){ # `tokens_df
   dev.off() 
 }
 
+#-----------------------------
+# STILL A WORK IN PROGRESS--FIGURE OUT HOW TO GET RID OF field_name & ngram AS ARGUMENTS
+# used in script: "4b_plot_tokens_byAuthorAndID.R"
+# function to create bubble plots, where x = token counts (n), y = unique identifiers, and bubble size = unique first authors
+  # takes arguments:  
+    # df: dataframe from Global Environment to use in plot
+    # field_name: Choose the following based on the df -- "Title", "Keywords", "Abstract", "entityName", "attributeName", "attributeLabel", "attributeDescription"
+    # ngram: Choose the following based on the df -- "Individual", "Bigram", "Trigram"
+    # AuthorGreaterThanValue: any term that has been used X# of unique first authors gets colored red and labeled with the corresponding term
+    # nudgeX: horizontal adjustment to nudge the starting position of each text label
+    # nudgeY: vertical adjustment to nudge the starting position of each text label
+#-----------------------------
+
+create_termCounts_byAuthorAndID_plot <- function(df, field_name, ngram, AuthorGreaterThanValue, nudgeX, nudgeY){ 
+  
+  # generate plot object name
+  plotObjectName <- gsub("Tokens", "_BubblePlot", df)
+  print(plotObjectName)
+  
+  # create plot
+  termCounts_byAuthorAndID_plot <- ggplot(df, aes(x = n, y = unique_ids, size = unique_authors, label = token)) +
+    geom_text_repel(data = subset(df, unique_authors > AuthorGreaterThanValue),
+                    nudge_x = nudgeX, nudge_y = nudgeY, segment.size = 0.2, segment.color = "grey50", direction = "x", guide = FALSE) +
+    geom_point(color = ifelse(df$unique_authors > AuthorGreaterThanValue, "red", "black"), alpha = 0.4, shape = 21) +
+    scale_size(range = c(0.01, 10), name = "# of Unique First Authors") +
+    labs(x = "Term Counts",
+         y = "# of Unique Identifiers",
+         title = paste(field_name, "Terms -", ngram, "Tokens"), 
+         caption = paste("Red points signify terms that are used by more than", AuthorGreaterThanValue, "unique first authors")) +
+    theme_light() +
+    theme(legend.position = "bottom",
+          plot.caption = element_text(size = 10, hjust = 1, color = "darkgray", face = "italic"))
+  
+  
+  plot(termCounts_byAuthorAndID_plot)
+}
