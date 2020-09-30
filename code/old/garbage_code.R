@@ -90,3 +90,52 @@ filterCount_trigramTokens <- function(file_name) {
   # save as object_name
   assign(object_name, my_file, envir = .GlobalEnv)
 }
+
+##########################################################################################
+# Create 3D plots of term counts, unique_id, unique_author values 
+##########################################################################################
+
+scatter3D(x = abstractBigramTokens$unique_ids, 
+          y = abstractBigramTokens$unique_authors, 
+          z = abstractBigramTokens$n,
+          bty = "g",
+          phi = 0,
+          ticktype = "detailed",
+          main = "ADC Abstract Bigrams",
+          xlab = "# of unique identifiers", 
+          ylab = "# of unique authors",
+          zlab = "Bigram Counts",
+          clab = "Bigram Counts")
+
+
+# scatter3D(x = abstractIndivTokens$unique_ids, 
+#           y = abstractIndivTokens$unique_authors, 
+#           z = abstractIndivTokens$n,
+#           bty = "g",
+#           phi = 0,
+#           main = "ADC Abstract Individual Tokens",
+#           xlab = "# of unique identifiers", 
+#           ylab = "# of unique authors",
+#           zlab = "Individual Token Counts",
+#           clab = "Individual Token Counts")
+
+text3D(x = abstractIndivTokens$unique_ids, 
+       y = abstractIndivTokens$unique_authors, 
+       z = abstractIndivTokens$n,
+       colvar = abstractIndivTokens$n,
+       labels = abstractIndivTokens$token,
+       cex = 0.7,
+       bty = "g",
+       phi = 0,
+       main = "ADC Abstract Individual Tokens",
+       xlab = "# of unique identifiers", 
+       ylab = "# of unique authors",
+       zlab = "Individual Token Counts",
+       clab = c("Individual", "Token Counts"))
+
+# display axis ranges
+getplist()[c("xlim","ylim","zlim")] 
+
+# zoom in 
+plotdev(xlim = c(500, 2000), ylim = c(200, 839), 
+        zlim = c(1, 5000))
