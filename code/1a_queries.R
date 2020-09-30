@@ -68,3 +68,14 @@ titleKeywordsAbractAuthors_query <- query(adc_mn,
 
 # write.csv(titleKeywordsAbractAuthors_query, file = here::here("data", "queries", paste("fullQuery_titleKeywordsAbstractAuthors", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
 
+# 4) title, keywords, abstracts, rights holders, origins, dateUplaoded -- NEVER ACTUALLY USED
+# titleKeywordsAbractAuthorsDate_query <- query(adc_mn, 
+#                                           list(q = "documents:* AND obsolete:(*:* NOT obsoletedBy:*)",
+#                                                rows = "7000",
+#                                                fl = "identifier, dateUploaded, title, keywords, abstract, author, authorLastName, rightsHolder, origin"),
+#                                           as = "data.frame")
+
+# write.csv(titleKeywordsAbractAuthorsDate_query, file = here::here("data", "queries", paste("fullQuery_titleKeywordsAbstractAuthorsDate", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
+
+
+
