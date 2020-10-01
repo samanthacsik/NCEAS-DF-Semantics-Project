@@ -139,3 +139,69 @@ getplist()[c("xlim","ylim","zlim")]
 # zoom in 
 plotdev(xlim = c(500, 2000), ylim = c(200, 839), 
         zlim = c(1, 5000))
+
+
+
+
+##########################################################################################
+# Create bubble plots of term counts, unique_id, unique_author values 
+##########################################################################################
+
+# first rendition bubble plot
+# plot_name <- ggplot(abstractIndivTokens, aes(x = n, y = unique_ids, size = unique_authors, label = token)) +
+#   geom_text_repel(data = subset(abstractIndivTokens, unique_authors > 300),
+#                   nudge_y = 2500, nudge_x = 5000, segment.size = 0.2, segment.color = "grey50", direction = "x") +
+#   geom_point(color = ifelse(abstractIndivTokens$unique_authors > 300, "red", "black"), alpha = 0.4, shape = 21) +
+#   scale_size(range = c(0.01, 10), name = "# of Unique First Authors") +
+#   labs(x = "Individual Token Counts",
+#        y = "# of Unique Identifiers",
+#        title = "Abstract Terms (Individual Tokens)",
+#        caption = "Red points signify terms that are used by more than 300 unique first authors.") +
+#   theme_light() +
+#   theme(legend.position = "bottom",
+#         plot.caption = element_text(size = 10, hjust = 1, color = "darkgray", face = "italic"))
+# plot_name
+
+#-------------------------------------------------------
+
+# TEST_PLOT <- ggplot(TEST, aes(x = weighted_n, y = weighted_ids, label = token)) +
+#   geom_point() +
+#   coord_cartesian(xlim=c(0,50), ylim = c(0, 35)) +
+#   geom_text_repel(data = TEST, size = 3,
+#                   nudge_y = 10, nudge_x = 10, segment.size = 0.1, segment.color = "grey50", direction = "y") 
+# 
+# TEST_PLOT
+#-------------------------------------------------------
+
+# individual keywords
+# create_termCounts_byAuthorAndID_plot(keywordsIndivTokens, "Keywords", "Individual", 100, 0, 200)
+# FILTERED_create_termCounts_byAuthorAndID_plot(keywordsIndivTokens, "Keywords", "Individual", 100, 0, 1000)
+
+
+# filtered n > 100
+FILTERED_create_termCounts_byAuthorAndID_plot <- function(df, field_name, ngram, AuthorGreaterThanValue, nudgeX, nudgeY){ 
+  
+  # generate plot object name
+  plotObjectName <- gsub("Tokens", "_BubblePlot", df)
+  print(plotObjectName)
+  
+  # discard any terms with n <= 10
+  df_filtered <- df %>% 
+    filter(n > 100)
+  
+  # create plot
+  termCounts_byAuthorAndID_plot <- ggplot(df_filtered, aes(x = n, y = unique_ids, size = unique_authors, label = token)) +
+    geom_text_repel(data = subset(df_filtered, unique_authors > AuthorGreaterThanValue),
+                    nudge_x = nudgeX, nudge_y = nudgeY, segment.size = 0.2, segment.color = "grey50", direction = "x") +
+    geom_point(color = ifelse(df_filtered$unique_authors > AuthorGreaterThanValue, "red", "black"), alpha = 0.4, shape = 21) +
+    scale_size(range = c(0.01, 10), name = "# of Unique First Authors") +
+    labs(x = "Term Counts",
+         y = "# of Unique Identifiers",
+         title = paste(field_name, "Terms -", ngram, "Tokens"), 
+         caption = paste("Red points signify terms that are used by more than", AuthorGreaterThanValue, "unique first authors")) +
+    theme_light() +
+    theme(legend.position = "bottom",
+          plot.caption = element_text(size = 10, hjust = 1, color = "darkgray", face = "italic"))
+  
+  plot(termCounts_byAuthorAndID_plot)
+}
