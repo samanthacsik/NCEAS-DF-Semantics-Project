@@ -13,6 +13,7 @@
 
 # 1) solr query for titles, keywords, abstracts across all ADC holdings
 # 2) solr query for attribute information across all ADC holdings
+# 3) solr query for titles, keywords, abstracts, authors across all ADC holdings
 
 ##########################################################################################
 # General Setup
@@ -59,7 +60,7 @@ attributes_query <- query(adc_mn,
 
 # write.csv(attributes_query, file = here::here("data", "queries", paste("fullQuery_attributes", Sys.Date(),".csv", sep = "")), row.names = FALSE) 
 
-# 3) title, keywords, abstracts, rights holders, origins
+# 3) title, keywords, abstracts, rights holders, authors
 titleKeywordsAbractAuthors_query <- query(adc_mn, 
                                    list(q = "documents:* AND obsolete:(*:* NOT obsoletedBy:*)",
                                         rows = "7000",
