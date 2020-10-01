@@ -16,7 +16,7 @@
     # split: number of words to split each input into (e.g. for trigrams, split = 3)
 #-----------------------------
 
-tidyTokens_unnest <- function(my_data, my_input, split) {
+tidyTerms_unnest <- function(my_data, my_input, split) {
   my_data %>%
     select(identifier, author, my_input) %>%
     unnest_tokens(output = ngram, input = !!my_input, token = "ngrams", n = split) %>% 
@@ -37,9 +37,9 @@ process_df <- function(df, item) {
   print(item)
   
   # unnest tokens
-  word_table <- tidyTokens_unnest(df, item, 1)
-  bigram_table <- tidyTokens_unnest(df, item, 2)
-  trigram_table <- tidyTokens_unnest(df, item, 3)
+  word_table <- tidyTerms_unnest(df, item, 1)
+  bigram_table <- tidyTerms_unnest(df, item, 2)
+  trigram_table <- tidyTerms_unnest(df, item, 3)
   
   # create object names
   word_table_name <- paste("unnested_", item, "IndivTokens", Sys.Date(), sep = "")
@@ -60,7 +60,7 @@ process_df <- function(df, item) {
 #-----------------------------
 
 ###### individual tokens ###### 
-filterCount_indivTokens <- function(file_name) {
+filterCount_indivTerms <- function(file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -103,7 +103,7 @@ filterCount_indivTokens <- function(file_name) {
 }
 
 ######  bigrams ###### 
-filterCount_bigramTokens <- function(file_name) {
+filterCount_bigramTerms <- function(file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -150,7 +150,7 @@ filterCount_bigramTokens <- function(file_name) {
 }
 
 ######trigrams ###### 
-filterCount_trigramTokens <- function(file_name) {
+filterCount_trigramTerms <- function(file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -203,7 +203,7 @@ filterCount_trigramTokens <- function(file_name) {
     # file_name: name of .csv file located at "data/text_mining/filtered_token_counts/*"
 #-----------------------------
 
-import_filteredTokenCounts <- function(file_name) {
+import_filteredTermCounts <- function(file_name) {
   
   # create object name
   object_name <- tools::file_path_sans_ext(all_files[i])
@@ -341,17 +341,18 @@ processAll_frequencyByLetter_plots <- function(tokens_df, df_name){ # `tokens_df
 
 #-----------------------------
 # STILL A WORK IN PROGRESS--FIGURE OUT HOW TO GET RID OF field_name & ngram AS ARGUMENTS
-# used in script: "4b_plot_tokens_byAuthorAndID.R"
-# function to create bubble plots, where x = token counts (n), y = unique identifiers, and bubble size = unique first authors
+# used in script: "NOT CURRENTLY USED ANYWHERE"
+# function to create bubble plots, where x = token counts (n), y = number of unique identifiers, and bubble size = number of unique first authors
   # takes arguments:  
     # df: dataframe from Global Environment to use in plot
-    # field_name: Choose the following based on the df -- "Title", "Keywords", "Abstract", "entityName", "attributeName", "attributeLabel", "attributeDescription"
-    # ngram: Choose the following based on the df -- "Individual", "Bigram", "Trigram"
+    # field_name: Choose the following based on the df -- "Title", "Keywords", "Abstract", "entityName", "attributeName", "attributeLabel", "attributeDescription" -- as character string
+    # ngram: Choose the following based on the df -- "Individual", "Bigram", "Trigram" -- as character string
     # AuthorGreaterThanValue: any term that has been used X# of unique first authors gets colored red and labeled with the corresponding term
     # nudgeX: horizontal adjustment to nudge the starting position of each text label
     # nudgeY: vertical adjustment to nudge the starting position of each text label
 #-----------------------------
 
+# ALL data
 create_termCounts_byAuthorAndID_plot <- function(df, field_name, ngram, AuthorGreaterThanValue, nudgeX, nudgeY){ 
   
   # generate plot object name
@@ -361,7 +362,7 @@ create_termCounts_byAuthorAndID_plot <- function(df, field_name, ngram, AuthorGr
   # create plot
   termCounts_byAuthorAndID_plot <- ggplot(df, aes(x = n, y = unique_ids, size = unique_authors, label = token)) +
     geom_text_repel(data = subset(df, unique_authors > AuthorGreaterThanValue),
-                    nudge_x = nudgeX, nudge_y = nudgeY, segment.size = 0.2, segment.color = "grey50", direction = "x", guide = FALSE) +
+                    nudge_x = nudgeX, nudge_y = nudgeY, segment.size = 0.2, segment.color = "grey50", direction = "x") +
     geom_point(color = ifelse(df$unique_authors > AuthorGreaterThanValue, "red", "black"), alpha = 0.4, shape = 21) +
     scale_size(range = c(0.01, 10), name = "# of Unique First Authors") +
     labs(x = "Term Counts",
@@ -375,3 +376,24 @@ create_termCounts_byAuthorAndID_plot <- function(df, field_name, ngram, AuthorGr
   
   plot(termCounts_byAuthorAndID_plot)
 }
+
+#-----------------------------
+# used in script: "5_calculate_weighted_scores.R"
+# function to weight n and unique_ids by number of unique_authors for a single "most important term" score
+  # takes arguments:
+    # df: dataframe of filtered_tokenCounts, in Global Environment
+#-----------------------------
+
+calculate_weighted_score <- function(df){
+  
+  # calculate weighted scores
+  new_table <- df %>% 
+    mutate(weighted_n = n/unique_authors,
+           weighted_ids = unique_ids/unique_authors,
+           score = weighted_n + weighted_ids) %>% 
+    arrange(score) 
+  
+  # update exisitng objects
+  assign(name, new_table, envir = .GlobalEnv)
+}
+
