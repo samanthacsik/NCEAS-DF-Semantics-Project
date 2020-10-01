@@ -54,6 +54,14 @@ NCEAS-DF-Semantics-Project
 ### Data
 
 #### * `data/queries/fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv`:
+*solr query of all most recently updated Arctic Data Center holdings, as of 2020-09-28*
+* `identifier`:
+* `rightsHolder`:
+* `abstract`:
+* `author`:
+* `title`:
+* `keywords`:
+
 #### * `data/attributes_query_eatocsv/extracted_attributes/fullQuery2020-09-13_attributes.csv`: 
 #### * `data/text_mining/unnested_tokens`: 
 #### * `data/text_mining/filtered_token_counts`:
