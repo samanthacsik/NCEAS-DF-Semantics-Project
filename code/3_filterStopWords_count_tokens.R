@@ -48,7 +48,7 @@ all_unnested_indiv_files <- list.files(path = here::here("data", "text_mining", 
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_indiv_files)){
   file_name <- all_unnested_indiv_files[i]
-  filterCount_indivTokens(file_name)
+  filterCount_indivTerms(file_name)
 }
 
 ##########################################################################################
@@ -61,7 +61,7 @@ all_unnested_bigram_files <- list.files(path = here::here("data", "text_mining",
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_bigram_files)){
   file_name <- all_unnested_bigram_files[i]
-  filterCount_bigramTokens(file_name)
+  filterCount_bigramTerms(file_name)
 }
 
 ##########################################################################################
@@ -74,7 +74,7 @@ all_unnested_trigram_files <- list.files(path = here::here("data", "text_mining"
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_trigram_files)){
   file_name <- all_unnested_trigram_files[i]
-  filterCount_trigramTokens(file_name)
+  filterCount_trigramTerms(file_name)
 }
 
 ##########################################################################################
@@ -114,9 +114,9 @@ list(data = df_list, names = names(df_list)) %>%
 #   select(identifier, author, title) %>%
 #   unnest_tokens(output = word, input = "title", token = "ngrams", n = 3) %>%
 #   group_by(word) %>%
-#   filter(word == "airglow image data") 
-#   # distinct(identifier) %>%
-#   # count()
+#   filter(word == "airglow image data")
+  # distinct(identifier) %>%
+  # count()
 
 # bigram "data alaska" - Kim Neilsen
 # data_alaska_example <- my_query %>%
