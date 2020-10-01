@@ -25,9 +25,7 @@
 # Load packages
 ##############################
 
-library(tidyverse)
-library(tidytext)
-library(patchwork)
+source(here::here("code", "0_libraries.R"))
 
 ##############################
 # source custom functions

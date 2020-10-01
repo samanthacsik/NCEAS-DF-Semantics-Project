@@ -23,8 +23,7 @@
 # Load packages
 ##############################
 
-library(tidyverse)
-library(tidytext)
+source(here::here("code", "0_libraries.R"))
 
 ##############################
 # Upload data - solr query results from script 1a & EA data from script 1b

@@ -7,6 +7,8 @@
 # input: NA
 # output: NA
 
+source(here::here("code", "0_libraries.R"))
+
 #-----------------------------
 # used in script "2_unnest_tokens.R"
 # function to unnest individual tokens and separates ngrams into multiple columns

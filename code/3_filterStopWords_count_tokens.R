@@ -22,8 +22,7 @@
 # Load packages
 ##############################
 
-library(tidyverse)
-library(tidytext)
+source(here::here("code", "0_libraries.R"))
 
 ##############################
 # get stop_words (built in lexicons)

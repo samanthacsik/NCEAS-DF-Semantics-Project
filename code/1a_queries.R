@@ -23,8 +23,7 @@
 # Load packages
 ##############################
 
-library(dataone)
-library(tidyverse)
+source(here::here("code", "0_libraries.R"))
 
 ##############################
 # set nodes & get token

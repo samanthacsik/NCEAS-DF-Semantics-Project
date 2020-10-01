@@ -19,10 +19,7 @@
 # Load packages
 ##############################
 
-library(dataone)
-library(eatocsv)
-library(tidyverse)
-library(svMisc)
+source(here::here("code", "0_libraries.R"))
 
 ##############################
 # set nodes & get token
