@@ -32,6 +32,7 @@ NCEAS-DF-Semantics-Project
           |_xml
       |_identifiers
     |_queries
+     |_old
     |_text_mining
       |_filtered_token_counts
       |_unnested_tokens
@@ -51,6 +52,12 @@ NCEAS-DF-Semantics-Project
 * `5_calculate_weighted_scores.R`: calculates a single score to represent the "importance" of each term, taking into accout term frequency, prevalence across data packages, and number of unqiue authors using that term
 
 ### Data
+
+#### * `data/queries/fullQuery_titleKeywordsAbstractAuthors2020-09-28.csv`:
+#### * `data/attributes_query_eatocsv/extracted_attributes/fullQuery2020-09-13_attributes.csv`: 
+#### * `data/text_mining/unnested_tokens`: 
+#### * `data/text_mining/filtered_token_counts`:
+#### * `data/text_mining/weighted_scores`: 
 
 ### Software
 
