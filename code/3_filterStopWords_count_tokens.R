@@ -47,7 +47,8 @@ all_unnested_indiv_files <- list.files(path = here::here("data", "text_mining", 
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_indiv_files)){
   file_name <- all_unnested_indiv_files[i]
-  filterCount_indivTerms(file_name)
+  file_path <- "data/text_mining/unnested_tokens"
+  filterCount_indivTerms(file_path, file_name)
 }
 
 ##########################################################################################
@@ -60,7 +61,8 @@ all_unnested_bigram_files <- list.files(path = here::here("data", "text_mining",
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_bigram_files)){
   file_name <- all_unnested_bigram_files[i]
-  filterCount_bigramTerms(file_name)
+  file_path <- "data/text_mining/unnested_tokens"
+  filterCount_bigramTerms(file_path, file_name)
 }
 
 ##########################################################################################
@@ -73,7 +75,8 @@ all_unnested_trigram_files <- list.files(path = here::here("data", "text_mining"
 # remove excess columns, filter out stop_words, remove NAs, calculate counts
 for(i in 1:length(all_unnested_trigram_files)){
   file_name <- all_unnested_trigram_files[i]
-  filterCount_trigramTerms(file_name)
+  file_path <- "data/text_mining/unnested_tokens"
+  filterCount_trigramTerms(file_path, file_name)
 }
 
 ##########################################################################################

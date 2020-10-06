@@ -62,7 +62,7 @@ process_df <- function(df, item) {
 #-----------------------------
 
 ###### individual tokens ###### 
-filterCount_indivTerms <- function(file_name) {
+filterCount_indivTerms <- function(file_path, file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -71,14 +71,14 @@ filterCount_indivTerms <- function(file_name) {
   print(object_name)
   
   # total token counts
-  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  token_counts <- read_csv(here::here(file_path, file_name)) %>% # file_path = "data/text_mining/unnested_tokens"
     rename(token = word1) %>% 
     select(identifier, token) %>% 
     filter(!token %in% stop_words$word, token != "NA") %>% 
     count(token, sort = TRUE)
   
   # unique ID counts for each token
-  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueID_counts <- read_csv(here::here(file_path, file_name)) %>% 
     rename(token = word1) %>% 
     select(identifier, token) %>% 
     filter(!token %in% stop_words$word, token != "NA") %>% 
@@ -87,7 +87,7 @@ filterCount_indivTerms <- function(file_name) {
     arrange(-unique_ids)
   
   # unique ID counts for each token
-  uniqueAuthor_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueAuthor_counts <- read_csv(here::here(file_path, file_name)) %>% 
     rename(token = word1) %>% 
     select(author, token) %>% 
     filter(!token %in% stop_words$word, token != "NA") %>% 
@@ -105,7 +105,7 @@ filterCount_indivTerms <- function(file_name) {
 }
 
 ######  bigrams ###### 
-filterCount_bigramTerms <- function(file_name) {
+filterCount_bigramTerms <- function(file_path, file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -114,7 +114,7 @@ filterCount_bigramTerms <- function(file_name) {
   print(object_name)
   
   # wrangle data
-  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  token_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(identifier, word1, word2) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA") %>% 
@@ -122,7 +122,7 @@ filterCount_bigramTerms <- function(file_name) {
     unite(col = "token", word1, word2, sep = " ")
   
   # unique ID counts for each token
-  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueID_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(identifier, word1, word2) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA") %>% 
@@ -132,7 +132,7 @@ filterCount_bigramTerms <- function(file_name) {
     arrange(-unique_ids)
   
   # unique ID counts for each token
-  uniqueAuthor_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueAuthor_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(author, word1, word2) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA") %>% 
@@ -152,7 +152,7 @@ filterCount_bigramTerms <- function(file_name) {
 }
 
 ######trigrams ###### 
-filterCount_trigramTerms <- function(file_name) {
+filterCount_trigramTerms <- function(file_path, file_name) {
   
   # create object name
   object_name <- basename(file_name)
@@ -161,7 +161,7 @@ filterCount_trigramTerms <- function(file_name) {
   print(object_name)
   
   # wrangle data
-  token_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  token_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(identifier, word1, word2, word3) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
@@ -169,7 +169,7 @@ filterCount_trigramTerms <- function(file_name) {
     unite(col = "token", word1, word2, word3, sep = " ")
  
   # unique ID counts for each token
-  uniqueID_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueID_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(identifier, word1, word2, word3) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
@@ -179,7 +179,7 @@ filterCount_trigramTerms <- function(file_name) {
     arrange(-unique_ids)
   
   # unique ID counts for each token
-  uniqueAuthor_counts <- read_csv(here::here("data", "text_mining", "unnested_tokens", file_name)) %>% 
+  uniqueAuthor_counts <- read_csv(here::here(file_path, file_name)) %>% 
     select(author, word1, word2, word3) %>% 
     filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
     filter(word1 != "NA", word2 != "NA", word3 != "NA") %>% 
