@@ -69,7 +69,7 @@ NCEAS-DF-Semantics-Project
 
 ### Software
 
-These analyses were performed in R (version 3.6.3) on the datateam.nceas.ucsb.edu server.
+These analyses were performed in R (version 3.6.3). See [SessionInfo](https://github.com/samanthacsik/NCEAS-DF-Semantics-Project/blob/master/SessionInfo) for dependencies.
 
 ### Acknowledgements
 
